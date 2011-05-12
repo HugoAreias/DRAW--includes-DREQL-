@@ -1,0 +1,9 @@
+Exemplo;
+
+DRAW_PATH = /Applications/MAMP/cgi-bin/Projecto/Exemplo;
+
+Select Gender;
+String Name;
+Email MyEmail;
+
+Primeira -> Segunda => Name; MyEmail; Gender[Male,Female]

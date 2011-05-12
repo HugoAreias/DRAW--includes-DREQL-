@@ -1,0 +1,14 @@
+\begin{theglossary}\glogroupA
+
+\gloitem {\glosslabel{glo:ANTLR}{ANTLR}}ANother Tool for Language Recognition\relax
+\glodelim 
+		\glsnumformat{2}\delimN \glsnumformat{5}\delimT \gloskip \glogroupU
+
+\gloitem {\glosslabel{glo:UML}{UML}}Unified Modeling Language\relax
+\glodelim 
+		\glsnumformat{2}\delimN \glsnumformat{5}\delimT \gloskip \glogroupX
+
+\gloitem {\glosslabel{glo:XML}{XML}}Extensible Markup Language\relax
+\glodelim 
+		\glsnumformat{31}\delimT 
+\end{theglossary}

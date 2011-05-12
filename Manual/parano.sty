@@ -1,0 +1,113 @@
+%%
+%% The original source files were:
+%% parano.dtx  (with options: `package')
+%%
+%% File: parano.dtx Copyright (c) 2003, CV Radhakrishnan
+%%       River Valley Technologies, Trivandrum, India
+%%       <cvr@river-valley.org>
+%%    
+%% This package may be distributed under the terms of the LaTeX Project 
+%% Public License, as described in lppl.txt in the base LaTeX distribution.
+%% either version 1.0 or, at your option, any later version.
+%%
+%% $Id: parano.sty,v 1.3 2003/06/14 19:20:42 cvr Exp cvr $
+%%
+%%
+%% Usage of the commands provided:
+%%
+%% \parano           ==> starts para numbering
+%% \parano[<number>] ==> starts the next para with number <number>
+%% \endparano        ==> stops para numbering
+%% \prepara          ==> redefine to add material that needs to appear
+%%                       before the para number. default is null
+%% \postpara         ==> redefine to append material to para number.
+%%                       default is null
+%% \paranoboxwidth   ==> width of paranumber box, default 2em
+%%
+%%
+\NeedsTeXFormat{LaTeX2e}
+\def\Fileversion$#1: #2 ${\gdef\fileversion{#2}}
+\def\Filedate$#1: #2 #3 ${\gdef\filedate{#2}}
+\Fileversion$Revision: 1.3 $
+\Filedate$Date: 2003/06/14 19:20:42 $
+\ProvidesPackage{parano}
+   [\filedate\space\fileversion\space Paranumber support (CVR)]
+\PackageWarningNoLine{parano}
+   {****************************************\MessageBreak
+    Package parano v,\fileversion\space loaded\MessageBreak
+    ****************************************}
+
+\newcounter{parano}
+%\@addtoreset{parano}{section}
+
+\def\prepara{}
+\def\postpara{}
+\newdimen\paranoboxwidth
+\paranoboxwidth=2em
+\newdimen\parwidth
+\renewcommand\theparano{\thesection.\arabic{parano}}
+                                                              
+\newif\ifparano\paranofalse
+
+\def\parano{\global\paranotrue\@ifnextchar[{\@@parano}{\@parano}}
+\AtBeginDocument{\parwidth\parindent}
+\long\def\@parano{%%
+%\typeout{PARINDENT = \the\parindent----PARWIDTH =  \the\parwidth}
+   \everypar{\parindent0pt\stepcounter{parano}%
+   \hbox to \paranoboxwidth{\prepara\theparano\hfill}\postpara}}
+
+\long\def\@@parano[#1]{%
+   \setcounter{parano}{#1}%
+   \addtocounter{parano}{-1}%
+   \everypar{\parindent0pt%
+   \stepcounter{parano}%
+   \hbox to \paranoboxwidth{\prepara\theparano\hfill}\postpara}}
+
+\def\endparano{\everypar{\parindent\parwidth}
+         \global\paranofalse%
+         \parindent\parwidth%
+%\typeout{PARINDENT = \the\parindent::::PARWIDTH =  \the\parwidth}
+}
+
+\def\@xsect#1{%
+  \@tempskipa #1\relax
+  \ifdim \@tempskipa>\z@
+    \par \nobreak
+    \vskip \@tempskipa
+    \@afterheading
+  \else
+    \@nobreakfalse
+    \global\@noskipsectrue
+    \everypar{%
+      \if@noskipsec
+        \global\@noskipsecfalse
+       {\setbox\z@\lastbox}%
+        \clubpenalty\@M
+        \begingroup \@svsechd \endgroup
+        \unskip
+        \@tempskipa #1\relax
+        \hskip -\@tempskipa
+      \else
+        \clubpenalty \@clubpenalty
+        \everypar{}%
+      \fi}%
+  \fi
+  \ifparano\@parano\fi\ignorespaces}
+
+\def\@startsection#1#2#3#4#5#6{\everypar{}%
+  \if@noskipsec \leavevmode \fi
+  \par
+  \@tempskipa #4\relax
+  \@afterindenttrue
+  \ifdim \@tempskipa <\z@
+    \@tempskipa -\@tempskipa \@afterindentfalse
+  \fi
+    \everypar{}%
+    \addpenalty\@secpenalty\addvspace{\@tempskipa}
+  \@ifstar
+    {\@ssect{#3}{#4}{#5}{#6}}%
+    {\@dblarg{\@sect{#1}{#2}{#3}{#4}{#5}{#6}}}}
+
+%%
+%% End of file 'parano.sty'
+%%

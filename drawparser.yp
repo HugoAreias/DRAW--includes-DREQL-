@@ -1,0 +1,298 @@
+
+
+%%
+
+Cgis : Title ';' Flags Graph {
+				my $list;
+				$list->[0] = { Title => $_[1] };
+				$list->[1] = { Flags => $_[3] };
+				$list->[2] = { Vars => [] };
+				$list->[3] = { Functions => [] };
+				$list->[4] = { Graph => $_[4] };
+				return $list
+	   }
+	 | Title ';' Flags Vars Graph { 
+				my $list;
+				$list->[0] = { Title => $_[1] };
+				$list->[1] = { Flags => $_[3] };
+				$list->[2] = { Vars => $_[4] };
+				$list->[3] = { Functions => [] };
+				$list->[4] = { Graph => $_[5] };
+				return $list
+	   }
+	 | Title ';' Flags Functions Graph {
+	   			my $list;
+				$list->[0] = { Title => $_[1] };
+				$list->[1] = { Flags => $_[3] };
+				$list->[2] = { Vars => [] };
+				$list->[3] = { Functions => $_[4] };
+				$list->[4] = { Graph => $_[5] };
+				return $list
+	   }
+	 | Title ';' Flags Vars Functions Graph {
+				my $list;
+				$list->[0] = { Title => $_[1] };
+				$list->[1] = { Flags => $_[3] };
+				$list->[2] = { Vars => $_[4] };
+				$list->[3] = { Functions => $_[5] };
+				$list->[4] = { Graph => $_[6] };
+				return $list
+	   }
+	 ;
+
+# TITLE
+
+Title : AuxTitle { return [ { title => $_[1] } ] }
+	  ;
+          
+AuxTitle : DVAR { return $_[1] }
+	     | AuxTitle DVAR { return ($_[1].' '.$_[2]) }
+         ;
+
+# FLAGS BLOCK
+
+Flags : Flag ';' { return $_[1] }
+      | Flags Flag ';' {
+                push @{$_[1]},@{$_[2]};
+                return $_[1]
+        }
+      ;
+
+Flag : DVAR '=' Url { return [ { $_[1] => $_[3] } ] }
+     | DVAR '=' Values { return [ { $_[1] => $_[3] } ] }
+     | DVAR '=' Email { return [ { $_[1] => $_[3] } ] }
+     ;
+
+Values : DVAR { return $_[1] }
+       | Values DVAR { return $_[1].' '.$_[2] }
+       ;
+
+Email : DVAR '@' DVAR { return $_[1].$_[2].$_[3] }
+      ;
+
+Url : Windows { return $_[1] }
+    | Unix { return $_[1] }
+    ;
+
+Windows : '\\' DVAR { return $_[1].$_[2] }
+        | Windows '\\' DVAR { return $_[1].$_[2].$_[3] }
+        ;
+
+Unix : '\/' DVAR { return $_[1].$_[2] }
+	 | Unix '\/' DVAR { return $_[1].$_[2].$_[3] }
+	 ;
+
+# VARIABLES BLOCK
+
+Vars : Var ';' { return $_[1] }
+	 | Vars Var ';' {
+				push @{$_[1]},@{$_[2]};
+				return $_[1]
+	   }
+	 ;
+
+Var : Type Name { return [ { $_[2] => [ { type => $_[1], value => undef, init => '0' } ] } ] }
+	| Type Name '=' DVAR { return [ { $_[2] => [ { type => $_[1], value => $_[4], init => '1' } ] } ] }
+	| Object { return $_[1] }
+    ;
+
+Object : Perl { return $_[1] }
+       ;
+
+Perl : Type DVAR Name { return [ { $_[3] => [ { type => 'OBJECT', lang => $_[1], value => undef, module => $_[2] } ] } ] }
+     | Type DVAR ':' ':' DVAR Name { return [ { $_[6] => [ { type => 'OBJECT', lang => $_[1], value => undef, module => $_[2].$_[3].$_[4].$_[5] } ] } ] }
+     ;
+
+# FUNCTIONS BLOCK
+
+Functions : FuncBlock { return $_[1] }
+		  | Functions FuncBlock {
+		    			push @{$_[1]},@{$_[2]};
+		  				return $_[1]
+		    }
+		  ;
+
+FuncBlock : Module '{' FuncList '}' {
+					foreach(@{$_[3]}) {
+						my @key = keys %{$_};
+						$_->{$key[0]}->[0] = { module => $_[1] }
+					}
+					return $_[3];
+			}
+		  ;
+
+Module : DVAR { return $_[1] }
+	   ;                     
+
+FuncList : Prototype ';' { return [ $_[1] ] }
+		 | FuncList Prototype ';' {
+		   				push @{$_[1]},$_[2];
+						return $_[1]
+		   } 
+		 ;                               
+
+Prototype : Type Name TypeArg {
+				my $list;
+				$list->[0] = { module => undef };
+				$list->[1] = { return => uc($_[1]) };
+				$list->[2] = { args => $_[3] };
+				return { $_[2] => $list }
+			}
+	      | '(' Args ')' Name TypeArg {
+				my $list;
+				$list->[0] = { module => undef };
+				$list->[1] = { return => [ { COMPOSED => $_[2] } ] };
+				$list->[2] = { args => $_[5] };
+				return { $_[4] => $list }
+			}
+		  | Type '(' Args ')' Name TypeArg {
+	   			my $list;
+		   		$list->[0] = { module => undef };
+		   		$list->[1] = { return => [ { uc($_[1]) => $_[3] } ] };
+		   		$list->[2] = { args => $_[6] };
+		   		return { $_[5] => $list }
+		    }
+		  # | Name TypeArg {
+		  # 		my $list;
+		  # 		$list->[0] = { module => undef };
+		  # 		$list->[1] = { return => VOID };
+		  # 		$list->[2] = { args => $_[2] };
+		  # 		return { $_[1] => $list }
+		  # 	}
+		  ;
+
+TypeArg : '(' ')' { return 'VOID' }
+  		| '(' Args ')' { return $_[2] }
+		;
+
+Args : Type { return [ $_[1] ] }
+	 | Args ',' Type {
+	    		push @{$_[1]},$_[3];
+				return $_[1]
+	   }
+	 ;
+
+# GRAPH BLOCK
+
+Graph : Edge { return $_[1] }
+	  | Graph Edge {
+	    		push @{$_[1]},@{$_[2]};
+				return $_[1]
+		}
+	  ;
+
+Edge : OrgNode '->' DstNode '=>' Parameters { return [ { $_[1] => [ { $_[3] => $_[5] } ] } ] }
+     | OrgNode '->' DstNode { return [ { $_[1] => [ { $_[3] => [] } ] } ] }
+     ;                     
+
+Parameters : Parameter { return $_[1] }
+		   | Parameters ';' Parameter {
+					push @{$_[1]},@{$_[3]};
+					return $_[1]
+			 }
+		   ;
+
+Parameter : Name { return [ { $_[1] => [ { type => 'VAR', transit => '0', required => '1' } ] } ] }
+		  | SpecialType { return [ $_[1] ] }
+		  | FunctionCall { return [ $_[1] ] }
+		  | MethodCall { return [ $_[1] ] }
+		  | Name ':' DVAR { return [ { $_[1] => [ { type => 'VAR', transit => $_[3], required => '1' } ] } ] }
+		  | Name ':' DVAR ':' DVAR { return [ { $_[1] => [ { type => 'VAR', transit => $_[3], required => $_[5] } ] } ] }
+		  ;
+
+SpecialType : Name '[' FuncArgs ']' {
+					my $list;
+					$list->[0] = { type => 'SPECIAL' };
+					$list->[1] = { args => $_[3] };
+					return { $_[1] => $list }
+			  }
+			;
+
+FunctionCall : '(' FuncArgs ')' Name NameArg {
+						my $list;
+						$list->[0] = { type => 'FUNCTION' };
+						$list->[1] = { return => $_[2] };
+						$list->[2] = { args => $_[5] };
+						return { $_[4] => $list }
+			   }
+			 | Name NameArg {
+			            my $list;
+						$list->[0] = { type => 'FUNCTION' };
+						$list->[1] = { return => [] };
+						$list->[2] = { args => $_[2] };
+						return { $_[1] => $list }
+			   }
+			 ;
+
+FuncArgs : Name { return [ $_[1] ] }
+         | FuncArgs ',' Name {
+   	   				push @{$_[1]},$_[3];
+   					return $_[1]
+   	       }
+		 ;
+
+NameArg : '(' ')' { return [] }
+		| '(' FuncArgs ')' { return $_[2] }
+		;
+
+MethodCall : PerlMethod { return $_[1] }
+           ;
+
+PerlMethod : Name '{' DVAR '}' {
+						my $list;
+						$list->[0] = { type => 'METHOD' };
+						$list->[1] = { method => $_[3] };
+						$list->[2] = { args => [] };
+						return { $_[1] => $list }
+             }
+           | Name '{' DVAR NameArg '}' {
+						my $list;
+						$list->[0] = { type => 'METHOD' };
+						$list->[1] = { method => $_[3] };
+						$list->[2] = { args => $_[4] };
+						return { $_[1] => $list }
+             }
+		   | Name '{' DVAR '->' DVAR '}' {
+		       			my $list;
+	  	      			$list->[0] = { type => 'METHOD' };
+	  	   			    $list->[1] = { method => $_[3].$_[4].$_[5] };
+   		   			  	$list->[2] = { args => [] };
+   		   			   	return { $_[1] => $list }
+             }
+		   | Name '{' DVAR ':' ':' DVAR '->' DVAR '}' {
+		   				my $list;
+		   		   		$list->[0] = { type => 'METHOD' };
+	   		   			$list->[1] = { method => $_[3].$_[4].$_[5].$_[6].$_[7].$_[8] };
+	   	   				$list->[2] = { args => [] };
+       					return { $_[1] => $list }
+		     }
+		   | Name '{' DVAR '->' DVAR NameArg '}' {
+		      			my $list;
+		      			$list->[0] = { type => 'METHOD' };
+		   			    $list->[1] = { method => $_[3].$_[4].$_[5] };
+		   			  	$list->[2] = { args => $_[6] };
+		   			   	return { $_[1] => $list }
+	         }
+	       | Name '{' DVAR ':' ':' DVAR '->' DVAR NameArg '}' {
+	  					my $list;
+	   			   		$list->[0] = { type => 'METHOD' };
+	   		   			$list->[1] = { method => $_[3].$_[4].$_[5].$_[6].$_[7].$_[8] };
+   		   				$list->[2] = { args => $_[9] };
+						return { $_[1] => $list }
+		     }
+           ;
+
+OrgNode : DVAR { return $_[1] }
+		;
+
+DstNode : DVAR { return $_[1] }
+	    ;
+
+Type : DVAR { return uc($_[1]) }
+	 ;
+
+Name : DVAR { return $_[1] }
+	 ;
+
+%%
+

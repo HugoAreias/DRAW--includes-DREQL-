@@ -1,0 +1,23 @@
+Testes;
+
+DRAW_BACK = 1;
+DRAW_PATH = /Applications/MAMP/cgi-bin/Projecto/Testes;
+
+Img MyImage;
+Perl CGI MyObj;
+Int init = 0;
+URL MyPage;
+
+Brincadeira {
+	img printImage(img);
+	string printState(int);
+	string incr(int);
+}
+
+MainPage -> CriaObjecto => MyObj{CGI -> new}
+CriaObjecto -> MainPage
+CriaObjecto -> Transita => MyObj{h3(init)}
+Transita -> Replace => init; incr(init)
+Replace -> Hiperligacao => MyPage; MyObj{textfield(MyPage,MyPage)}
+Hiperligacao -> Estado => printState(init)
+Estado -> Clica_me => MyImage; printImage(MyImage)

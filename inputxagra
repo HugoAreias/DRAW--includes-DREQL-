@@ -1,0 +1,391 @@
+XAGra;
+
+DRAW_PATH = /Applications/MAMP/cgi-bin/Projecto/XAGra;
+DRAW_CSS = /mycss.css;
+DRAW_AUTHOR = Hugo Areias e Sergio Areias;
+DRAW_DB_PATH = /Applications/MAMP/cgi-bin/Projecto/XAGra/Data/xagra.db;
+DRAW_DB_USER = Hugo;
+DRAW_DB_PASS = Xagra;
+DRAW_EMAIL = juger.on.naut@gmail.com;
+DRAW_WEB = /twiki.di.uminho.pt/twiki/bin/view/Education/EL/WebHome;
+
+String GrammarName;
+String Symbol;
+Text Value;
+Select SymbolType;
+String Attribute;
+String Type;
+Select Class;
+String Production;
+Text Expression;
+String Import;
+String Function;
+Code Specification;
+String Computation;
+Int Position;
+String ReturnType;
+String Modus;
+Int Cod_Arg;
+Radio Operation;
+Select Field;
+Select Condition;
+String Keyword;
+String NewName;
+
+XagraEditor {
+	string startGrammar(string);
+	string checkGrammar(string);
+	string addSymbol(string,string,text,string);
+	string addAttribute(string,string,string,string);
+	string addProduction(string,string,text);
+	string addComputation(string,string,int,string,string);
+	string addArgument(int,string,int);
+	string addFunction(string,string,code);
+	string addImport(string,string);
+	string addProdComp(string,string,string,int,string,string);
+	string addCompArg(string,int,string,int);
+	vars editSymbol(string);
+	vars editAttribute(string);
+	vars editProduction(string);
+	vars editComputation(string);
+	vars editArgument(int);
+	vars editFunction(string);
+	string modifySymbol(string,string,string,text,string);
+	string modifyAttribute(string,string,string,string,string);
+	string modifyProduction(string,string,string,text);
+	string modifyComputation(string,string,string,int,string,string);
+	string modifyArgument(int,string,int);
+	string modifyFunction(string,string,string,code);
+	hash dualSymbol(string,string,string,string,string);
+	hash dualAttribute(string,string,string,string,string);
+	hash dualProduction(string,string,string,string,string);
+	hash dualComputation(string,string,string,string,string);
+	hash dualArgument(string,string,string,string,string);
+	hash dualFunction(string,string,string,string,string);
+	string removeImport(string,string);
+	hash showSymbols(string);
+	hash showAttributes(string);
+	hash showFunctions(string);
+	hash showImportations(string);
+	hash showProductions(string);
+	hash showComputations(string);
+	hash showArguments(string);
+	string compOfProd(string,string);
+	string argOfComp(string,int);
+	hash viewComputations(string);
+	hash viewArguments(string);
+}
+
+StartGrammar -> Login
+StartGrammar -> XAGra =>
+	GrammarName;
+	startGrammar(GrammarName)
+Login -> StartGrammar
+Login -> XAGra =>
+	GrammarName;
+	checkGrammar(GrammarName)
+XAGra -> Login
+XAGra -> Symbol
+XAGra -> Attribute
+XAGra -> Production
+XAGra -> Function
+XAGra -> Importation
+XAGra -> Inspector
+
+Symbol -> XAGra
+Symbol -> Attribute
+Symbol -> Production
+Symbol -> Function
+Symbol -> Importation
+Symbol -> AddSymbol
+Symbol -> Symbol =>
+	Field[Symbol,Value,SymbolType];
+	Condition[StartWith,EndWith,Contains,Equal,NotEqual];
+	Keyword;
+	Operation[Remove,Search];
+	dualSymbol(GrammarName,Field,Condition,Keyword,Operation)
+Symbol -> ModifySymbol => Symbol; editSymbol(Symbol)
+AddSymbol -> XAGra
+AddSymbol -> Symbol
+AddSymbol -> AddSymbol =>
+	Symbol;
+	Value:0:0;
+	SymbolType[Axiom,NonTerminal,Terminal];
+	addSymbol(GrammarName,Symbol,Value,SymbolType)
+ModifySymbol -> XAGra
+ModifySymbol -> Symbol =>
+	Symbol;
+	NewName;
+	Value:0:0;
+	SymbolType[Axiom,NonTerminal,Terminal];
+	modifySymbol(GrammarName,Symbol,NewName,Value,SymbolType)
+
+Attribute -> XAGra
+Attribute -> Symbol
+Attribute -> Production
+Attribute -> Function
+Attribute -> Importation
+Attribute -> AddAttribute
+Attribute -> Attribute =>
+	Field[Attribute,Type,Class];
+	Condition[StartWith,EndWith,Contains,Equal,NotEqual];
+	Keyword;
+	Operation[Remove,Search];
+	dualAttribute(GrammarName,Field,Condition,Keyword,Operation)
+Attribute -> ModifyAttribute => Attribute; editAttribute(Attribute)
+AddAttribute -> XAGra
+AddAttribute -> Attribute
+AddAttribute -> AddAttribute =>
+	Attribute;
+	Type;
+	Class[SyntAttribute,InheritAttribute,IntrinsicAttribute];
+	addAttribute(GrammarName,Attribute,Type,Class)
+ModifyAttribute -> XAGra
+ModifyAttribute -> Attribute =>
+	Attribute;
+	NewName;
+	Type;
+	Class[SyntAttribute,InheritAttribute,IntrinsicAttribute];
+	modifyAttribute(GrammarName,Attribute,NewName,Type,Class)
+
+Production -> XAGra
+Production -> Symbol
+Production -> Attribute
+Production -> Function
+Production -> Importation
+Production -> Computation
+Production -> AddProduction
+Production -> AssociateComputation
+Production -> AssociateArguments
+Production -> Production =>
+	Field[Production,Expression];
+	Condition[StartWith,EndWith,Contains,Equal,NotEqual];
+	Keyword;
+	Operation[Remove,Search];
+	dualProduction(GrammarName,Field,Condition,Keyword,Operation)
+Production -> ModifyProduction => Production; editProduction(Production)
+Production -> ViewComputations => Production; viewComputations(Production)
+AddProduction -> XAGra
+AddProduction -> Production
+AddProduction -> AssociateComputation
+AddProduction -> AssociateArguments
+AddProduction -> ProductionComputations =>
+	Production;
+	Expression;
+	addProduction(GrammarName,Production,Expression)
+ModifyProduction -> XAGra
+ModifyProduction -> Production =>
+	Production;
+	NewName;
+	Expression;
+	modifyProduction(GrammarName,Production,NewName,Expression)
+
+ProductionComputations -> XAGra
+ProductionComputations -> Production
+ProductionComputations -> Computation
+ProductionComputations -> OperationArguments =>
+	Computation;
+	Attribute;
+	Position;
+	ReturnType;
+	Modus;
+	addProdComp(Production,Computation,Attribute,Position,ReturnType,Modus)
+
+OperationArguments -> XAGra
+OperationArguments -> ProductionComputations
+OperationArguments -> Computation
+OperationArguments -> Arguments
+OperationArguments -> OperationArguments =>
+	Cod_Arg;
+	Attribute;
+	Position;
+	addCompArg(Computation,Cod_Arg,Attribute,Position)
+
+Computation -> XAGra
+Computation -> Production
+Computation -> Arguments
+Computation -> AddComputation
+Computation -> AssociateComputation
+Computation -> AssociateArguments
+Computation -> Computation => 
+	Field[Computation,Attribute,Position,ReturnType,Modus];
+	Condition[StartWith,EndWith,Contains,Equal,NotEqual];
+	Keyword;
+	Operation[Remove,Search];
+	dualComputation(GrammarName,Field,Condition,Keyword,Operation)
+Computation -> ModifyComputation => Computation; editComputation(Computation)
+Computation -> ViewArguments => Computation; viewArguments(Computation)
+AddComputation -> XAGra
+AddComputation -> Production
+AddComputation -> Computation
+AddComputation -> Arguments
+AddComputation -> AssociateComputation
+AddComputation -> AssociateArguments
+AddComputation -> OperationArguments =>
+	Computation;
+	Attribute;
+	Position;
+	ReturnType;
+	Modus;
+	addComputation(Computation,Attribute,Position,ReturnType,Modus)
+ModifyComputation -> XAGra
+ModifyComputation -> Computation =>
+	Computation;
+	NewName;
+	Attribute;
+	Position;
+	ReturnType;
+	Modus;
+	modifyComputation(Computation,NewName,Attribute,Position,ReturnType,Modus)
+
+Arguments -> XAGra
+Arguments -> Production
+Arguments -> Computation
+Arguments -> AddArguments
+Arguments -> AssociateComputation
+Arguments -> AssociateArguments
+Arguments -> Arguments =>
+	Field[Cod_Arg,Attribute,Position];
+	Condition[StartWith,EndWith,Contains,Equal,NotEqual];
+	Keyword;
+	Operation[Remove,Search];
+	dualArgument(GrammarName,Field,Condition,Keyword,Operation)
+Arguments -> ModifyArguments => Cod_Arg; editArgument(Cod_Arg)
+AddArguments -> XAGra
+AddArguments -> Production
+AddArguments -> Computation
+AddArguments -> Arguments
+AddArguments -> AssociateComputation
+AddArguments -> AssociateArguments
+AddArguments -> AddArguments =>
+	Cod_Arg;
+	Attribute;
+	Position;
+	addArgument(Cod_Arg,Attribute,Position)
+ModifyArguments -> XAGra
+ModifyArguments -> Arguments =>
+	Attribute;
+	Position;
+	modifyArgument(Cod_Arg,Attribute,Position)
+
+Function -> XAGra
+Function -> Function =>
+	Function;
+	Condition[StartWith,EndWith,Contains,Equal,NotEqual];
+	Operation[Remove,Search];
+	dualFunction(GrammarName,Field,Condition,Keyword,Operation)
+Function -> AddFunction
+Function -> ModifyFunction => Function; editFunction(Function)
+AddFunction -> XAGra
+AddFunction -> Function
+AddFunction -> AddFunction =>
+	Function;
+	Specification;
+	addFunction(GrammarName,Function,Specification)
+ModifyFunction -> XAGra
+ModifyFunction -> Function =>
+	Function;
+	NewName;
+	Specification;
+	modifyFunction(GrammarName,Function,NewName,Specification)
+
+Importation -> XAGra
+Importation -> Importation => Import; addImport(GrammarName,Import)
+Importation -> RemoveImportation
+RemoveImportation -> XAGra
+RemoveImportation -> Importation
+RemoveImportation -> RemoveImportation => Import; removeImport(GrammarName,Import)
+
+AssociateComputation -> XAGra
+AssociateComputation -> Production
+AssociateComputation -> Computation
+AssociateComputation -> Arguments
+AssociateComputation -> AssociateComputation =>
+	Production;
+	Computation;
+	compOfProd(Production,Computation)
+
+AssociateArguments -> XAGra
+AssociateArguments -> Production
+AssociateArguments -> Computation
+AssociateArguments -> Arguments
+AssociateArguments -> AssociateArguments =>
+	Computation;
+	Cod_Arg;
+	argOfComp(Computation,Cod_Arg)
+
+ViewComputations -> XAGra
+ViewComputations -> Production
+ViewComputations -> Computation
+ViewComputations -> Arguments
+
+ViewArguments -> XAGra
+ViewArguments -> Production
+ViewArguments -> Computation
+ViewArguments -> Arguments
+
+
+Inspector -> XAGra
+Inspector -> ShowSymbols => showSymbols(GrammarName)
+Inspector -> ShowAttributes => showAttributes(GrammarName)
+Inspector -> ShowProductions => showProductions(GrammarName)
+Inspector -> ShowComputations => showComputations(GrammarName)
+Inspector -> ShowArguments => showArguments(GrammarName)
+Inspector -> ShowFunctions => showFunctions(GrammarName)
+Inspector -> ShowImportations => showImportations(GrammarName)
+
+ShowSymbols -> XAGra
+ShowSymbols -> ShowAttributes => showAttributes(GrammarName)
+ShowSymbols -> ShowProductions => showProductions(GrammarName)
+ShowSymbols -> ShowComputations => showComputations(GrammarName)
+ShowSymbols -> ShowArguments => showArguments(GrammarName)
+ShowSymbols -> ShowFunctions => showFunctions(GrammarName)
+ShowSymbols -> ShowImportations => showImportations(GrammarName)
+
+ShowAttributes -> XAGra
+ShowAttributes -> ShowSymbols => showSymbols(GrammarName)
+ShowAttributes -> ShowProductions => showProductions(GrammarName)
+ShowAttributes -> ShowComputations => showComputations(GrammarName)
+ShowAttributes -> ShowArguments => showArguments(GrammarName)
+ShowAttributes -> ShowFunctions => showFunctions(GrammarName)
+ShowAttributes -> ShowImportations => showImportations(GrammarName)
+
+ShowProductions -> XAGra
+ShowProductions -> ShowSymbols => showSymbols(GrammarName)
+ShowProductions -> ShowAttributes => showAttributes(GrammarName)
+ShowProductions -> ShowComputations => showComputations(GrammarName)
+ShowProductions -> ShowArguments => showArguments(GrammarName)
+ShowProductions -> ShowFunctions => showFunctions(GrammarName)
+ShowProductions -> ShowImportations => showImportations(GrammarName)
+
+ShowComputations -> XAGra
+ShowComputations -> ShowSymbols => showSymbols(GrammarName)
+ShowComputations -> ShowAttributes => showAttributes(GrammarName)
+ShowComputations -> ShowProductions => showProductions(GrammarName)
+ShowComputations -> ShowArguments => showArguments(GrammarName)
+ShowComputations -> ShowFunctions => showFunctions(GrammarName)
+ShowComputations -> ShowImportations => showImportations(GrammarName)
+
+ShowArguments -> XAGra
+ShowArguments -> ShowSymbols => showSymbols(GrammarName)
+ShowArguments -> ShowAttributes => showAttributes(GrammarName)
+ShowArguments -> ShowProductions => showProductions(GrammarName)
+ShowArguments -> ShowComputations => showComputations(GrammarName)
+ShowArguments -> ShowFunctions => showFunctions(GrammarName)
+ShowArguments -> ShowImportations => showImportations(GrammarName)
+
+ShowFunctions -> XAGra
+ShowFunctions -> ShowSymbols => showSymbols(GrammarName)
+ShowFunctions -> ShowAttributes => showAttributes(GrammarName)
+ShowFunctions -> ShowProductions => showProductions(GrammarName)
+ShowFunctions -> ShowComputations => showComputations(GrammarName)
+ShowFunctions -> ShowArguments => showArguments(GrammarName)
+ShowFunctions -> ShowImportations => showImportations(GrammarName)
+
+ShowImportations -> XAGra
+ShowImportations -> ShowSymbols => showSymbols(GrammarName)
+ShowImportations -> ShowAttributes => showAttributes(GrammarName)
+ShowImportations -> ShowProductions => showProductions(GrammarName)
+ShowImportations -> ShowComputations => showComputations(GrammarName)
+ShowImportations -> ShowArguments => showArguments(GrammarName)
+ShowImportations -> ShowFunctions => showFunctions(GrammarName)

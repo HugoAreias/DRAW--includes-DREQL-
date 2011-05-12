@@ -1,0 +1,46 @@
+Class Grammar (
+	Grammar_Name:String [key,editable],
+	Axiom:String [optional]
+);
+Class Symbol (
+	Id_symbol:String [key],
+	Value:text,
+	Type:String [optional]
+);
+Class Attribute (
+	Id_attrib:String [key],
+	Type:String [optional],
+	Classe:String [optional]
+);
+Class Production (
+	Prod_Name:String [key],
+	Expression:text [optional]
+);
+Class Importation (
+	Import:String [key]
+);
+Class Function (
+	Func_Name:String [key],
+	Specification:text [optional]
+);
+Class Computation (
+	Comp_Name:String [key],
+	Position:int [optional],
+	ReturnType:String [optional],
+	Modus:String [optional]
+);
+Class Argument (
+	Cod_Arg:int [key],
+	Position:int [optional]
+);
+Relation ( Grammar, Symbol: *, * );
+Relation ( Grammar, Attribute: *, * );
+Relation ( Grammar, Production: *, * );
+Relation ( Grammar, Importation: *, * );
+Relation ( Grammar, Function: *, * );
+Relation ( Production, Computation: *, * );
+Relation ( Computation, Argument: *, * );
+Relation ( Attribute, Computation: 1, * );
+Relation ( Symbol, Attribute: 1, * );
+Relation ( Attribute, Argument: 1, * );
+Renom String = varchar;

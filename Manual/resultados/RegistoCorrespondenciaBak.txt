@@ -1,0 +1,34 @@
+Abstract Grande (
+        Coisas,
+        Coisas_,
+        Coisas__);
+Class Registo (
+        Cod_Registo:int(3) [key,autoinc],
+        TipoRegisto: Set,
+        DataRegisto:date);
+Class Controlo Extends Grande (
+        Responsavel,
+        Aprovacao:boolean[editable],
+        Cod_Controlo:int(3) [key,autoinc] );
+Class Recepcao (
+        Cod_Recepcao:int(3) [key,autoinc],
+        Cod_Remetente:int(3) ,
+        Assunto: Nomes,
+        DataRecepcao:date);
+Class Emissao (
+        Cod_Emissao:int(3) [key,autoinc],
+        Cod_Destinatario:int(3),
+        Assunto: Nomes,
+        DataEmissao:date);
+Class Entidade (
+        Cod_Entidade:int(3) [key,autoinc],
+        Nome: [editable],
+        Morada: [editable,optional],
+        Telefone: [editable,optional],
+        Email: [editable,optional]);
+Relation ( Registo, Emissao: 1, * );
+Relation ( Registo, Controlo: 1, 1 );
+Relation ( Registo, Recepcao: 1, *);
+Relation ( Entidade, Emissao: 1, * );
+Relation ( Entidade, Recepcao: 1, * );
+Renom Nomes = varchar;

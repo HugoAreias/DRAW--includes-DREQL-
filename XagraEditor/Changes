@@ -1,0 +1,6 @@
+Revision history for Perl extension XagraEditor.
+
+0.01  Thu Jul  9 14:43:43 2009
+	- original version; created by h2xs 1.23 with options
+		-X XagraEditor
+

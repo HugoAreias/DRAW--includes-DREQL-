@@ -1,0 +1,94 @@
+WikiRepositorium;
+
+DRAW_BACK = 0;
+DRAW_WEB = www.google.com;
+DRAW_CSS = /mycss.css;
+DRAW_AUTHOR = Hugo Miguel;
+DRAW_EMAIL = hadesrulez@gmail.com;
+DRAW_PATH = /Applications/MAMP/cgi-bin/Projecto/WikiRepositorium;
+
+text Description;
+url Wikipage;
+select Field;
+select Conditions;
+string Alias = test;
+string Title;
+Perl CGI Myobj;
+string Keyword;
+radio cs = 1;
+string Theme;
+int Relevance;
+
+WikiRepositorium{
+hash showEntries();
+string removeEntry(string);
+vars searchEntry(string,int);
+List(string,string,url,text,string,int) search(string,string,string,int);
+string addEntry(string,string,url,text,string,int);
+string modifyEntry(string,string,url,text,string,int);
+List(string,string,url,text,string,int) removeAll(string,string,string,int);
+}
+
+MainPage -> MainPage
+MainPage -> AddPage
+MainPage -> ShowEntries => Myobj{CGI -> new}; showEntries()
+MainPage -> RemovePage
+MainPage -> AdvancedSearch =>
+	Field[Alias,Title,Wikipage,Theme,Relevance];
+	Conditions[StartWith,EndWith,Contains,Equal,NotEqual];
+	cs[0,1];
+	Keyword:0:0;
+	(Alias,Title,Wikipage,Description,Theme,Relevance) search(Field,Keyword,Conditions,cs)
+MainPage -> Modify =>
+	Alias:0;
+	cs[0,1];
+	searchEntry(Alias,cs)
+AddPage -> AddPage =>
+	Alias;
+	Title;
+	Wikipage;
+	Description;
+	Myobj{h3(Theme)};
+	Theme;
+	Relevance;
+	addEntry(Alias,Title,Wikipage,Description,Theme,Relevance)
+AddPage -> MainPage
+RemovePage -> MainPage
+RemovePage -> RemovePage =>
+	Alias;
+	removeEntry(Alias)
+RemovePage -> RemoveAll =>
+	Field[Alias,Title,Wikipage,Theme,Relevance];
+	Conditions[StartWith,EndWith,Contains,Equal,NotEqual];
+	cs[0,1];
+	Keyword;
+	(Alias,Title,Wikipage,Description,Theme,Relevance) removeAll(Field,Keyword,Conditions,cs)
+RemoveAll -> MainPage
+ShowEntries -> MainPage
+ShowEntries -> AddPage
+ShowEntries -> Modify =>
+	Alias;
+	cs[0,1];
+	Myobj{h3(Alias,cs)};
+	searchEntry(Alias,cs)
+Modify -> MainPage =>
+	Alias;
+	Title;
+	Wikipage;
+	Description:0:0;
+	Theme;
+	Relevance;
+	modifyEntry(Alias,Title,Wikipage,Description,Theme,Relevance)
+Modify -> ShowEntries => showEntries()
+AddPage -> ShowEntries => showEntries()
+RemovePage -> ShowEntries => showEntries()
+AdvancedSearch -> MainPage
+AdvancedSearch -> RemoveAll =>
+	Field[Alias,Title,Wikipage,Theme,Relevance];
+	Conditions[StartWith,EndWith,Contains,Equal,NotEqual];
+	cs[0,1];
+	Keyword:1:1;
+	(Alias,Title,Wikipage,Description,Theme,Relevance) removeAll(Field,Keyword,Conditions,cs)
+AdvancedSearch -> RemovePage =>
+	Alias;
+	removeEntry(Alias)

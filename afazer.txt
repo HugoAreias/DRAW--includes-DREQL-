@@ -1,0 +1,76 @@
+Proximas modificacoes
+
+(Falta validar os tamanhos dos inteiros e reais no sql)
+(listToHash nao esta a verificar entradas repetidas nas arvores internas)
+(tentar substituir o argumento 'undef' por eval('undef), quando e enviada a lista de argumentos para uma funcao ou objecto)
+(flag DRAW_SUBMIT altera o nome dos botoes para um determinado valor)
+
+- criar make file
+- fazer um script para verificar se todos os modulos necessarios estao instalados
+- adicionar o tipo de dados RegExp
+- adicionar o tipo de dados Hash
+- permitir invocar Hashes nas transicoes
+- alterar as comparacoes utilizando a funcao "ref", verificar o valor de retorno (HASH, ARRAY, etc.)
+
+Para futuras alteracoes
+
+- permitir invocar classes JAVA atraves do modulo Java::Import
+- suportar diferentes tipos de motores de base de dados
+- criar um XML Schema para representar o ficheiro de entrada
+- alterar o parser para receber XML como ficheiro de entrada
+- adicionar o tipo de dados File, permitindo abrir janelas de directorias
+- permitir adicionar comentarios
+- retirar os campos hiddens das funcoes, pelo facto de serem desnecessarios
+- permitir invocar a mesma funcao ou metodo mais do que uma vez numa transicao
+- permitir diferentes transicoes entre dois nodos do grafo
+- utilizar 'try' e 'catch' no acesso a base de dados para obter e lancar os erros
+- alterar o campo hidden da funcao, em vez de enviar uma string envia uma referencia para uma funcao (tinha que importar o modulo) 
+- por em evidencia os campos repetidos (submit = 0)
+- codificar password com md5
+- adicionar preview the links (quase impossivel)
+
+Alteracoes efectuadas
+
+(done 15/12/08) adicionar novos tipos (select e checkbox)
+(done 15/12/08) adicionar o novo tipo de dados Phone
+(done 15/12/08) criar hyperlinks para os nodos que nao tem campos, caso tenham funcoes adicionar ao link os dados como hidden fields
+(done 15/12/08) mudar para links os formularios sem parametros
+(done 13/01/09) acrescentar as forms method=post e reset=1
+(done 13/01/09) acrescentar nas opcoes do form, messages => { form_required_text => "" },
+(done 15/04/09) permitir transicao de valores pelas forms
+(done 16/04/09) adicionar o novo tipo de dados Vars
+(done 19/04/09) acrescentar o link back caso o pai seja igual ao destino do link
+(done 03/06/09) alterar a impressao de urls para um link que abre noutra janela
+(done 03/06/09) alterar a impressao de emails para uma referencia para mailto
+(done 05/06/09) adicionar o tipo de dados Code
+(done 13/06/09) adicionar os tipos de dados Radio e Imagem (Img)
+(done 13/06/09) melhorar o layout das cgis, utilizando CSS
+(done 13/06/09) imprimir todos os resultados (Listas, hash, listas compostas, etc.) para caixa de texto scrollable
+(done 13/06/09) acrescentar classes CSS em alguns pontos para uma melhor manipulacao do layout
+(done 15/06/09) permitir inicializar variaveis, util para variaveis de sessao
+(done 16/06/09) criar uma flag required para variaveis obrigatorias
+(done 28/06/09) adicionar bloco de flags (css, path, autor, email, webpage, back, etc.)
+(done 30/06/09) permitir utilizar como argumentos de funcoes valores inicializados que nao provenham de forms
+(done 03/07/09) adicionar o tipo de dados Object
+(done 04/07/09) permitir invocar Objectos nas transicoes
+(done 06/07/09) permitir a transicao de valores na totalidade do grafo
+
+(done 01/12/08) fazer o parser
+(done 01/12/08) criar um parser para ler uma hash de ficheiro e utilizar o conversor para gerar uma hash
+(done 01/12/08) criar uma funcao para converter listas em hash (escalabilidade vs eficiencia)
+(done 01/12/08) tentar fazer Tie hash no parser (fazer uma lista e converter para uma hash)
+
+(done 15/12/08) definir tipos de dados e as respectivas funcoes de impressao
+(done 15/12/08) utilizar a variavel $@ para detectar erros nas funcoes
+(done 15/12/08) alterar o script de modo a que aceite varias funcoes
+
+(done 01/12/08) fazer um script que corra na shell e que gere as estruturas auxiliares atraves de um parser
+(done 17/03/09) pedir um title para criar uma pasta com esse nome para separar as diferentes aplicacoes
+(done 26/06/09) unir as camadas DREQL e DRAW atraves da criacao de um modulo Perl
+
+(done 01/12/08) mudar os tipos para maiusculas ao inserir na hash
+(done 01/12/08) mudar os tipos para maiusculas ao inserir na hash no parser atraves da funcao uc
+(done 15/01/09) alterar a condicao para verificar se o ficheiro existe (-f filename)
+(done 17/03/09) acrescentar um if no start form e end form ao criar links no caso de nao ter parametros
+(done 17/03/09) substituir: print "..." por print qq(...)
+(done 17/03/09) tentar modificar passagens por valor para passagens por referencia, para melhorar a eficiencia
